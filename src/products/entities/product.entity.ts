@@ -1,4 +1,6 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { type } from "os";
+import { Column, Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Kemasan } from "./kemasan.entity";
 
 @Entity('T_PRODUCT')
 export class Product {
@@ -11,6 +13,13 @@ export class Product {
     @Column()
     brand: string;
 
-    @Column('box', {nullable: false})
-    packages: string[];
+    @JoinTable()
+    @ManyToMany(
+        type => Kemasan, 
+        (kemasan) => kemasan.products,
+        {
+            cascade: true
+        }
+    )
+    kemasans: Kemasan[];
 }

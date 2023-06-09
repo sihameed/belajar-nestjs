@@ -9,5 +9,5 @@ export class CreateProductDto {
     readonly brand: string;
 
     @IsString({each: true})
-    readonly packages: string[];
+    readonly kemasans: string[];
 }

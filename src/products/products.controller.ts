@@ -20,7 +20,7 @@ export class ProductsController {
     }
 
     @Post()
-    create(@Body() createProductDto: CreateProductDto): void {
+    create(@Body() createProductDto: CreateProductDto) {
         console.log(createProductDto instanceof CreateProductDto);
 
         return this.productService.create(createProductDto);
