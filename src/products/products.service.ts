@@ -1,10 +1,13 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { Product } from './entities/product.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Connection, Repository } from 'typeorm';
 import { CreateProductDto } from 'src/products/dto/create-product.dto/create-product.dto';
 import { UpdateProductDto } from 'src/products/dto/update-product.dto/update-product.dto';
 import { Kemasan } from './entities/kemasan.entity';
+import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto/pagination-query.dto';
+import { Event } from 'src/events/entities/event.entity/event.entity';
+import { PRODUCT_BRANDS } from './products.constants';
 
 @Injectable()
 export class ProductService {
@@ -14,11 +17,23 @@ export class ProductService {
 
         @InjectRepository(Kemasan)
         private readonly kemasanRepository: Repository<Kemasan>,
-    ) {}
 
-    findAll() {
+        private readonly connection: Connection, 
+
+        @Inject(PRODUCT_BRANDS)
+        productBrands: string[],
+
+    ) {
+        console.log(productBrands);
+    }
+
+    findAll(paginationQuery: PaginationQueryDto) {
+        const {limit, offset} = paginationQuery;
+
         return this.productRepository.find({
             relations: ['kemasans'],
+            skip: offset,
+            take: limit,
         });
     }
 
@@ -71,6 +86,31 @@ export class ProductService {
         const product = await this.findOne(id);
         
         return this.productRepository.remove(product);
+    }
+
+    async recommendKemasan(product: Product) {
+        const queryRunner = this.connection.createQueryRunner();
+
+        await queryRunner.connect();
+        await queryRunner.startTransaction();
+
+        try {
+            product.recommendations++;
+            
+            const recommendEvent = new Event();
+            recommendEvent.name = 'recommend_product';
+            recommendEvent.type = 'medicine';
+            recommendEvent.payload = { productId: product.id };
+
+            await queryRunner.manager.save(product);
+            await queryRunner.manager.save(recommendEvent);
+
+            await queryRunner.commitTransaction();
+        } catch (err) {
+            await queryRunner.rollbackTransaction();
+        } finally {
+            await queryRunner.release();
+        }
     }
 
     private async preloadKemasanByName(name: string): Promise<Kemasan> {

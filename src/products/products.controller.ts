@@ -2,16 +2,17 @@ import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestj
 import { ProductService } from 'src/products/products.service';
 import { CreateProductDto } from './dto/create-product.dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto/update-product.dto';
+import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto/pagination-query.dto';
 
 @Controller('products')
 export class ProductsController {
     constructor(private readonly productService: ProductService) {}
 
     @Get()
-    findAll(@Query() paginationQuery) {
+    findAll(@Query() paginationQuery: PaginationQueryDto) {
         // const {limit, offset} = paginationQuery;
 
-        return this.productService.findAll();
+        return this.productService.findAll(paginationQuery);
     }
 
     @Get(':id')

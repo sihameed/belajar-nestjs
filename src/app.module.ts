@@ -3,6 +3,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ProductsModule } from './products/products.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ProductRatingModule } from './product-rating/product-rating.module';
 
 @Module({
   imports: [ProductsModule, TypeOrmModule.forRoot({
@@ -14,7 +15,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
     database: 'postgres',
     autoLoadEntities: true,
     synchronize: true
-  })],
+  }), ProductRatingModule],
   controllers: [AppController],
   providers: [AppService],
 })
