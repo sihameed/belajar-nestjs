@@ -20,10 +20,10 @@ export class ProductService {
 
         private readonly connection: Connection, 
 
-        @Inject(PRODUCT_BRANDS)
-        productBrands: string[],
+        @Inject(PRODUCT_BRANDS) productBrands: string[],
 
     ) {
+        console.log('-------------------------------')
         console.log(productBrands);
     }
 

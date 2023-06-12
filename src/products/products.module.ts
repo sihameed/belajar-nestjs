@@ -14,10 +14,8 @@ class MockProductsService {
 @Module({
     imports: [TypeOrmModule.forFeature([Product, Kemasan, Event])], 
     controllers: [ProductsController], 
-    providers: [{
-        provide: ProductService, 
-        useValue: new MockProductsService()
-    }, {
+    providers: [ProductService, 
+        {
         provide: PRODUCT_BRANDS,
         useValue: ['kf', 'sanbe', 'kalbe']
     }], 
